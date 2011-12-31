@@ -1,0 +1,19 @@
+{
+  "author": "Brian M. Carlson <brian@enginode.com> (enginode.com)",
+  "name": "ami",
+  "description": "asterisk ami client",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/brianc/node-ami.git"
+  },
+  "main": "lib/",
+  "scripts": {
+    "test": "mocha -r should"
+  },
+  "engines": {
+    "node": "~0.6.3"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
