@@ -80,5 +80,22 @@ describe('ami.Client', function() {
                                     'Secret: pass','',''].join('\r\n'))
       })
     })
+
+    describe('success', function() {
+      var socket = new MockSocket();
+      var client = new ami.Client(socket);
+
+      it('fires callback without error', function(done) {
+        client.login('user', 'pass', done);
+        process.nextTick(function(){
+          socket.emit('data',Buffer([
+                                    'Response: Success',
+                                    'ActionID: 1',
+                                    'Message: Authentication accepted',
+                                    ''
+          ].join('\r\n'),'utf8'))
+        })
+      })
+    })
   })
 })
