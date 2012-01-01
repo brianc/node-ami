@@ -10,10 +10,11 @@ var MockSocket = function() {
 util.inherits(MockSocket, EventEmitter);
 
 //emit data on process.nextTick
-MockSocket.emitSoon = function(data) {
+MockSocket.prototype.emitSoon = function() {
   var self = this;
+  var args = arguments;
   process.nextTick(function() {
-    self.emit('data', data);
+    self.emit.apply(self, args);
   })
 }
 
@@ -41,8 +42,8 @@ describe('ami.Client', function() {
       var host = 'localhost';
 
       before(function(done) {
-        client.connect(port, host, done);
         socket.emitSoon('connect');
+        client.connect(port, host, done);
       })
 
       it('sets socket properties', function() {
@@ -62,9 +63,7 @@ describe('ami.Client', function() {
         client.on('error', function() {
           done();
         });
-        process.nextTick(function() {
-          socket.emit('error', new Error("fake error"));
-        })
+        socket.emitSoon('error', new Error("fake error"));
       })
     })
   })
@@ -76,14 +75,13 @@ describe('ami.Client', function() {
 
       beforeEach(function() {
         //enqueue a successful login message
-        process.nextTick(function(){
-          socket.emit('data',Buffer([
-            'Response: Success',
-            'ActionID: 1',
-            'Message: Authentication accepted',
-            ''
-          ].join('\r\n'),'utf8'))
-        })
+        var packet = [
+        'Response: Success',
+        'ActionID: 1',
+        'Message: Authentication accepted',
+        ''
+        ].join('\r\n') 
+        socket.emitSoon('data', Buffer(packet,'utf8'))
       })
 
 
