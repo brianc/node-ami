@@ -98,6 +98,7 @@ describe('ami.Client', function() {
       it('emits a login success message', function(done) {
         client.login('test', 'boom', function() { })
         client.on('message', function(msg) {
+          msg.response.should.equal('Success')
           done()
         })
       })
