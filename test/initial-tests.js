@@ -43,7 +43,6 @@ describe('ami.Client', function() {
         client.socket.port.should.equal(5038);
         client.socket.host.should.equal('localhost');
       })
-
     })
 
     describe('error', function() {
@@ -61,39 +60,45 @@ describe('ami.Client', function() {
           socket.emit('error', new Error("fake error"));
         })
       })
-      
     })
-
   })
 
   describe('login', function() {
-    describe('sent packet', function() {
-      var socket = new MockSocket();
-      var client = new ami.Client(socket);
-      client.login('user', 'pass', function() {
-      });
-      it('has correct information', function() {
-        socket.data[0].should.equal([
-                                    'ActionID: 1',
-                                    'Action: login',
-                                    'Username: user',
-                                    'Secret: pass','',''].join('\r\n'))
-      })
-    })
-
     describe('success', function() {
       var socket = new MockSocket();
       var client = new ami.Client(socket);
 
-      it('fires callback without error', function(done) {
-        client.login('user', 'pass', done);
+      beforeEach(function() {
+        //enqueue a successful login message
         process.nextTick(function(){
           socket.emit('data',Buffer([
-                                    'Response: Success',
-                                    'ActionID: 1',
-                                    'Message: Authentication accepted',
-                                    ''
+            'Response: Success',
+            'ActionID: 1',
+            'Message: Authentication accepted',
+            ''
           ].join('\r\n'),'utf8'))
+        })
+      })
+
+
+      it('sends correct login message', function() {
+        client.login('user', 'pass', function() {
+        })
+        socket.data[0].should.equal([
+          'ActionID: 1',
+          'Action: login',
+          'Username: user',
+          'Secret: pass','',''].join('\r\n'))
+      })
+
+      it('calls callback with no error', function(done) {
+        client.login('test', 'boom', done);
+      })
+
+      it('emits a login success message', function(done) {
+        client.login('test', 'boom', function() { })
+        client.on('message', function(msg) {
+          done()
         })
       })
     })
