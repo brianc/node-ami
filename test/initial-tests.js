@@ -11,6 +11,10 @@ util.inherits(MockSocket, EventEmitter);
 
 //emit data on process.nextTick
 MockSocket.emitSoon = function(data) {
+  var self = this;
+  process.nextTick(function() {
+    self.emit('data', data);
+  })
 }
 
 MockSocket.prototype.connect = function(port, host, connectListener) {
@@ -38,9 +42,7 @@ describe('ami.Client', function() {
 
       before(function(done) {
         client.connect(port, host, done);
-        process.nextTick(function() {
-          socket.emit('connect');
-        })
+        socket.emitSoon('connect');
       })
 
       it('sets socket properties', function() {
