@@ -102,10 +102,10 @@ describe('ami.Client', function() {
       it('emits a login success message', function(done) {
         client.login('test', 'boom', function() { })
         client.on('message', function(msg) {
-          return done();
           msg.actionID.should.equal(1);
           msg.response.should.equal('Success');
           msg.message.should.equal('Authentication accepted');
+          done();
         })
       })
     })
