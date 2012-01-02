@@ -1,4 +1,5 @@
 var ami = require(__dirname + '/../lib');
+var Action = require(__dirname + '/../lib/action');
 
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
@@ -77,7 +78,7 @@ describe('ami.Client', function() {
         //enqueue a successful login message
         var packet = [
         'Response: Success',
-        'ActionID: 1',
+        'ActionID: ' + Action.lastActionID,
         'Message: Authentication accepted',
         ''
         ].join('\r\n') 
@@ -89,10 +90,11 @@ describe('ami.Client', function() {
         client.login('user', 'pass', function() {
         })
         socket.data[0].should.equal([
-          'ActionID: 1',
           'Action: login',
           'Username: user',
-          'Secret: pass','',''].join('\r\n'))
+          'Secret: pass',
+          'ActionID: ' + (Action.lastActionID-1),
+          '',''].join('\r\n'))
       })
 
       it('calls callback with no error', function(done) {
@@ -102,7 +104,7 @@ describe('ami.Client', function() {
       it('emits a login success message', function(done) {
         client.login('test', 'boom', function() { })
         client.on('message', function(msg) {
-          msg.actionID.should.equal(1);
+          msg.actionID.should.equal(Action.lastActionID-1);
           msg.response.should.equal('Success');
           msg.message.should.equal('Authentication accepted');
           done();
