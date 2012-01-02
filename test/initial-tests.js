@@ -83,11 +83,7 @@ describe('Client', function() {
 
       beforeEach(function() {
         //enqueue a successful login message
-        var packet = [
-        'Response: Success',
-        'ActionID: ' + Action.lastActionID,
-        'Message: Authentication accepted',
-        ].join('\r\n') + '\r\n\r\n'
+        var packet = 'Response: Success\r\nActionID: ' + Action.lastActionID + '\r\nMessage: Authentication accepted\r\n\r\n'
         socket.emitSoon('data', Buffer(packet,'utf8'))
       })
 
@@ -95,12 +91,8 @@ describe('Client', function() {
       it('sends correct login message', function() {
         client.login('user', 'pass', function() {
         })
-        socket.data[0].should.equal([
-          'Action: login',
-          'Username: user',
-          'Secret: pass',
-          'ActionID: ' + (Action.lastActionID-1),
-          '',''].join('\r\n'))
+        var expectedData = 'Action: login\r\nUsername: user\r\nSecret: pass\r\nActionID: ' + (Action.lastActionID-1) + '\r\n\r\n';
+        socket.data[0].should.equal(expectedData);
       })
 
       it('calls callback with no error', function(done) {
