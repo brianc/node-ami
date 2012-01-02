@@ -1,50 +1,15 @@
-var ami = require(__dirname + '/../lib');
-var Action = require(__dirname + '/../lib/action');
-
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
-var MockSocket = function() {
-  EventEmitter.call(this);
-  this.outgoing = [];
-  this.data = [];
-}
 
-util.inherits(MockSocket, EventEmitter);
+var MemorySocket = require('memory-socket')
 
-//emit data on process.nextTick
-MockSocket.prototype.emitSoon = function() {
-  var self = this;
-  if(arguments.length) {
-    this.outgoing.push(arguments);
-  }
-  process.nextTick(function() {
-    var args = self.outgoing.shift();
-    if(args) {
-      self.emit.apply(self, args);
-      self.emitSoon();
-    }
-  })
-}
-
-MockSocket.prototype.connect = function(port, host, connectListener) {
-  this.port = port;
-  if('function' === typeof host) {
-    connectListener = host;
-  }
-  else if('function' === typeof connectListener) {
-    this.on('connect', connectListener);
-  }
-  this.host = host;
-}
-
-MockSocket.prototype.write = function(data) {
-  this.data.push(data);
-}
+var ami = require(__dirname + '/../lib');
+var Action = require(__dirname + '/../lib/action');
 
 describe('Client', function() {
   describe('connection', function() {
     describe('success', function() {
-      var socket = new MockSocket();
+      var socket = new MemorySocket();
       var client = new ami.Client(socket);
       var port = 5038;
       var host = 'localhost';
@@ -61,7 +26,7 @@ describe('Client', function() {
     })
 
     describe('error', function() {
-      var socket = new MockSocket();
+      var socket = new MemorySocket();
       var client = new ami.Client(socket);
       var port = 5038;
       var host = 'localhost';
@@ -78,7 +43,7 @@ describe('Client', function() {
 
   describe('login', function() {
     describe('success', function() {
-      var socket = new MockSocket();
+      var socket = new MemorySocket();
       var client = new ami.Client(socket);
 
       beforeEach(function() {
@@ -116,7 +81,7 @@ describe('Client', function() {
   describe('incomming message parsing', function() {
 
     it('doesn\'t choke on startup greeting message', function(done) {
-      var socket = new MockSocket();
+      var socket = new MemorySocket();
       var client = new ami.Client(socket);
       socket.emitSoon('data', Buffer('Asterisk Call Manager/1.1\r\n', 'utf8'));
       
@@ -130,8 +95,11 @@ describe('Client', function() {
   })
 
   describe('split packets', function(done) {
-    var socket = new MockSocket();
+    var socket = new MemorySocket();
     var client = new ami.Client(socket);
+    client.socket.on('data', function() {
+      console.log('msg: \n"%s"', arguments[0].toString('utf8'));
+    })
 
     before(function() {
       //socket.emitSoon('data', Buffer('Asterisk Call Man'))
@@ -142,7 +110,6 @@ describe('Client', function() {
     })
 
     it('parse correctly', function(done) {
-      return done();
       client.login('name', 'pw');
       client.on('message', function(msg) {
         done()
