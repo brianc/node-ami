@@ -5,6 +5,7 @@ var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var MockSocket = function() {
   EventEmitter.call(this);
+  this.outgoing = [];
   this.data = [];
 }
 
@@ -13,9 +14,15 @@ util.inherits(MockSocket, EventEmitter);
 //emit data on process.nextTick
 MockSocket.prototype.emitSoon = function() {
   var self = this;
-  var args = arguments;
+  if(arguments.length) {
+    this.outgoing.push(arguments);
+  }
   process.nextTick(function() {
-    self.emit.apply(self, args);
+    var args = self.outgoing.shift();
+    if(args) {
+      self.emit.apply(self, args);
+      self.emitSoon();
+    }
   })
 }
 
@@ -34,7 +41,7 @@ MockSocket.prototype.write = function(data) {
   this.data.push(data);
 }
 
-describe('ami.Client', function() {
+describe('Client', function() {
   describe('connection', function() {
     describe('success', function() {
       var socket = new MockSocket();
@@ -80,8 +87,7 @@ describe('ami.Client', function() {
         'Response: Success',
         'ActionID: ' + Action.lastActionID,
         'Message: Authentication accepted',
-        ''
-        ].join('\r\n') 
+        ].join('\r\n') + '\r\n\r\n'
         socket.emitSoon('data', Buffer(packet,'utf8'))
       })
 
@@ -109,6 +115,45 @@ describe('ami.Client', function() {
           msg.message.should.equal('Authentication accepted');
           done();
         })
+      })
+    })
+  })
+})
+
+describe('Client', function() {
+  describe('incomming message parsing', function() {
+
+    it('doesn\'t choke on startup greeting message', function(done) {
+      var socket = new MockSocket();
+      var client = new ami.Client(socket);
+      socket.emitSoon('data', Buffer('Asterisk Call Manager/1.1\r\n', 'utf8'));
+      
+      client.on('message', function(msg) {
+        msg.should.equal('Asterisk Call Manager/1.1');
+        done();
+      })
+    })
+
+    it('handles unfinished startup')
+  })
+
+  describe('split packets', function(done) {
+    var socket = new MockSocket();
+    var client = new ami.Client(socket);
+
+    before(function() {
+      //socket.emitSoon('data', Buffer('Asterisk Call Man'))
+      //socket.emitSoon('data', Buffer('ager/1.1\r\n'))
+      var firstPartOfResponse = ''
+      socket.emitSoon('data', Buffer('Response: Success\r\nActionID: ', 'utf8'))
+      socket.emitSoon('data', Buffer(Action.lastActionID + '\r\nMessage: test\r\n\r\n'))
+    })
+
+    it('parse correctly', function(done) {
+      return done();
+      client.login('name', 'pw');
+      client.on('message', function(msg) {
+        done()
       })
     })
   })
