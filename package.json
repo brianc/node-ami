@@ -15,5 +15,7 @@
     "node": "~0.6.3"
   },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "memory-socket" : "*"
+  }
 }
