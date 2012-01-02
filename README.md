@@ -1,5 +1,7 @@
 # node-ami
 
+node.js JavaScript client to communicate with an __A__sterisk __M__anager __I__nterface
+
 ## install
 
 `npm install ami`
