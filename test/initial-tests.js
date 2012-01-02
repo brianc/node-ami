@@ -102,7 +102,7 @@ describe('ami.Client', function() {
       })
 
       it('emits a login success message', function(done) {
-        client.login('test', 'boom', function() { })
+        client.login('test', 'boom');
         client.on('message', function(msg) {
           msg.actionID.should.equal(Action.lastActionID-1);
           msg.response.should.equal('Success');
