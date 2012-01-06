@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/brianc/node-ami.png)](http://travis-ci.org/brianc/node-ami])
+
 # node-ami
 
 node.js JavaScript client to communicate with an __A__sterisk __M__anager __I__nterface
