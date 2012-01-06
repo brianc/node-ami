@@ -41,3 +41,7 @@ Very much a work in progress.  Would love contributions.
 ## more, more info
 
 Fork & contribute! Open Source is awesome.
+
+## license
+
+[unlicense](http://unlicense.org)
