@@ -6,9 +6,37 @@ node.js JavaScript client to communicate with an __A__sterisk __M__anager __I__n
 
 `npm install ami`
 
+## use
+
+### connect & login
+```js
+
+var Client = require('ami').Client;
+
+var port = 5038; //default AMI port
+var host = 'localhost';
+var client = new Client();
+client.connect(port, host, function onConnection(err) {
+  if(err) throw err; 
+
+  //create the action you want to send to asterisk
+  var login = {
+    action: 'login',
+    username: 'brian',
+    secret: 'shhh!'
+  }
+
+  //send it and handle the response
+  client.send(login, function(err, response){
+
+  })
+})
+
+```
+
 ## more info
 
-Completely in alpha status. Tests not passing yet. Watch this repo or check back around the end of Jan 2012 for a working version
+Very much a work in progress.  Would love contributions.
 
 ## more, more info
 
