@@ -47,6 +47,8 @@ describe('Client', function() {
       var client = new ami.Client(socket);
 
       beforeEach(function() {
+        socket = new MemorySocket();
+        client = new ami.Client(socket);
         //enqueue a successful login message
         var packet = 'Response: Success\r\nActionID: ' + Action.lastActionID + '\r\nMessage: Authentication accepted\r\n\r\n'
         socket.emitSoon('data', Buffer(packet,'utf8'))
@@ -72,6 +74,16 @@ describe('Client', function() {
           msg.message.should.equal('Authentication accepted');
           done();
         })
+      })
+
+      it('removes completed action from action queue', function() {
+        client._pendingActions.length.should.equal(0);
+        client.login('test', 'boom', function(err) {
+          process.nextTick(function() {
+            client._pendingActions.length.should.equal(0);
+          })
+        })
+        client._pendingActions.length.should.equal(1);
       })
     })
   })
