@@ -27,7 +27,7 @@ client.connect(port, host, function onConnection(err) {
   }
 
   //send it and handle the response
-  client.send(login, function(err, response){
+  client.send(login, function(err, response) {
 
   })
 })
