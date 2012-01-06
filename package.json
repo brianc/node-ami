@@ -1,8 +1,8 @@
 {
   "author": "Brian M. Carlson <brian@enginode.com> (enginode.com)",
   "name": "ami",
-  "description": "asterisk ami client",
-  "version": "0.0.1",
+  "description": "AMI (Asterisk Manager Interface) client",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/brianc/node-ami.git"
@@ -12,7 +12,7 @@
     "test": "mocha -r should -R tap -t 100"
   },
   "engines": {
-    "node": "~0.6.3"
+    "node": "~0.6.0"
   },
   "dependencies": {},
   "devDependencies": {
