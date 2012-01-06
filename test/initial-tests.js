@@ -46,6 +46,12 @@ describe('Client', function() {
       var socket = new MemorySocket();
       var client = new ami.Client(socket);
 
+      var loginAction = {
+        action: 'login',
+        username: 'user',
+        secret: 'pass'
+      }
+
       beforeEach(function() {
         socket = new MemorySocket();
         client = new ami.Client(socket);
@@ -56,18 +62,17 @@ describe('Client', function() {
 
 
       it('sends correct login message', function() {
-        client.login('user', 'pass', function() {
-        })
+        client.send(loginAction);
         var expectedData = 'Action: login\r\nUsername: user\r\nSecret: pass\r\nActionID: ' + (Action.lastActionID-1) + '\r\n\r\n';
         socket.data[0].should.equal(expectedData);
       })
 
       it('calls callback with no error', function(done) {
-        client.login('test', 'boom', done);
+        client.send(loginAction, done);
       })
 
       it('emits a login success message', function(done) {
-        client.login('test', 'boom');
+        client.send(loginAction);
         client.on('message', function(msg) {
           msg.actionID.should.equal((Action.lastActionID-1).toString());
           msg.response.should.equal('Success');
@@ -78,7 +83,7 @@ describe('Client', function() {
 
       it('removes completed action from action queue', function() {
         client._pendingActions.length.should.equal(0);
-        client.login('test', 'boom', function(err) {
+        client.send(loginAction, function(err) {
           process.nextTick(function() {
             client._pendingActions.length.should.equal(0);
           })
@@ -96,7 +101,7 @@ describe('Client', function() {
       var socket = new MemorySocket();
       var client = new ami.Client(socket);
       socket.emitSoon('data', Buffer('Asterisk Call Manager/1.1\r\n', 'utf8'));
-      
+
       client.on('message', function(msg) {
         msg.should.equal('asterisk Call Manager/1.1');
         done();
