@@ -16,6 +16,8 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "mocha": "*",
+    "should": "*",
     "memory-socket" : "*"
   }
 }
