@@ -19,7 +19,7 @@ describe('Parser', function() {
       msg.should.equal('asterisk Manager Interface 1.1/0')
       done();
     })
-    parser.parse('Asterisk Manager Interface 1.1/0\r\n\r\n');
+    parser.parse('Asterisk Manager Interface 1.1/0\r\n');
   })
 
   it('parses multi tuple message', function(done) {
@@ -39,12 +39,16 @@ describe('Parser', function() {
   it('parses multiple messages', function(done) {
     var parser = new Parser();
     parser.once('parse', function(msg) {
-      msg.name.should.equal('Brian');
+      msg.should.equal('hello from asterisk');
       parser.once('parse', function(msg) {
-        msg.age.should.equal('25');
-        done();
+        msg.name.should.equal('Brian');
+        parser.once('parse', function(msg) {
+          msg.age.should.equal('25');
+          done();
+        })
       })
     })
+    parser.parse('hello from asterisk\r\n');
     parser.parse('Name: Brian\r\n\r\nAge: 25\r\n\r\n');
   })
 

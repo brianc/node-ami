@@ -83,7 +83,7 @@ describe('Client', function() {
     it('doesn\'t choke on startup greeting message', function(done) {
       var socket = new MemorySocket();
       var client = new ami.Client(socket);
-      socket.emitSoon('data', Buffer('Asterisk Call Manager/1.1\r\n\r\n', 'utf8'));
+      socket.emitSoon('data', Buffer('Asterisk Call Manager/1.1\r\n', 'utf8'));
       
       client.on('message', function(msg) {
         msg.should.equal('asterisk Call Manager/1.1');
@@ -91,7 +91,6 @@ describe('Client', function() {
       })
     })
 
-    it('handles unfinished startup')
   })
 
   describe('split packets', function(done) {
