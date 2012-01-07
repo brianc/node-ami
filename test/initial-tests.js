@@ -1,6 +1,3 @@
-var EventEmitter = require('events').EventEmitter;
-var util = require('util');
-
 var MemorySocket = require('memory-socket')
 
 var ami = require(__dirname + '/../lib');
