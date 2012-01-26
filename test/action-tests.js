@@ -7,8 +7,13 @@ describe('Action', function() {
       var action1 = new Action();
       var action2 = new Action();
       var action3 = new Action();
-      action1.actionID.should.be.lessThan(action2.actionID);
-      action2.actionID.should.be.lessThan(action3.actionID);
+      action1.actionID.should.not.equal(action2.actionID)
+      action2.actionID.should.not.equal(action3.actionID);
+    })
+
+    it('is saved as lastActionID', function() {
+      var anAction = new Action();
+      anAction.actionID.should.equal(Action.lastActionID);
     })
   })
   

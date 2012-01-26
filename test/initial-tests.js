@@ -59,19 +59,33 @@ describe('Client', function() {
 
 
       it('sends correct login message', function() {
+        var socket = new MemorySocket();
+        var client = new ami.Client(socket);
         client.send(loginAction);
-        var expectedData = 'Action: login\r\nUsername: user\r\nSecret: pass\r\nActionID: ' + (Action.lastActionID-1) + '\r\n\r\n';
+        //enqueue a successful login message
+        var packet = 'Response: Success\r\nActionID: ' + Action.lastActionID + '\r\nMessage: Authentication accepted\r\n\r\n'
+        socket.emitSoon('data', Buffer(packet,'utf8'))
+        var expectedData = 'Action: login\r\nUsername: user\r\nSecret: pass\r\nActionID: ' + (Action.lastActionID) + '\r\n\r\n';
         socket.data[0].should.equal(expectedData);
       })
 
       it('calls callback with no error', function(done) {
+        var socket = new MemorySocket();
+        var client = new ami.Client(socket);
         client.send(loginAction, done);
+        //enqueue a successful login message
+        var packet = 'Response: Success\r\nActionID: ' + Action.lastActionID + '\r\nMessage: Authentication accepted\r\n\r\n'
+        socket.emitSoon('data', Buffer(packet,'utf8'))
       })
 
       it('emits a login success message', function(done) {
+        var socket = new MemorySocket();
+        var client = new ami.Client(socket);
         client.send(loginAction);
+        var packet = 'Response: Success\r\nActionID: ' + Action.lastActionID + '\r\nMessage: Authentication accepted\r\n\r\n'
+        socket.emitSoon('data', Buffer(packet,'utf8'))
         client.on('message', function(msg) {
-          msg.actionID.should.equal((Action.lastActionID-1).toString());
+          msg.actionID.should.equal((Action.lastActionID).toString());
           msg.response.should.equal('Success');
           msg.message.should.equal('Authentication accepted');
           done();
@@ -79,7 +93,11 @@ describe('Client', function() {
       })
 
       it('removes completed action from action queue', function() {
+        var socket = new MemorySocket();
+        var client = new ami.Client(socket);
         client._pendingActions.length.should.equal(0);
+        var packet = 'Response: Success\r\nActionID: ' + Action.lastActionID + '\r\nMessage: Authentication accepted\r\n\r\n'
+        socket.emitSoon('data', Buffer(packet,'utf8'))
         client.send(loginAction, function(err) {
           process.nextTick(function() {
             client._pendingActions.length.should.equal(0);
