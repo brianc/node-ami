@@ -1,11 +1,11 @@
 {
-  "author": "Brian M. Carlson <brian@enginode.com> (enginode.com)",
-  "name": "ami",
+  "author": "Thiago Costa <admin@rootbsd.info>",
+  "name": "@thiagodk/ami",
   "description": "AMI (Asterisk Manager Interface) client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "repository": {
     "type": "git",
-    "url": "git://github.com/brianc/node-ami.git"
+    "url": "git://github.com/thiagodk/node-ami"
   },
   "main": "lib/",
   "scripts": {
